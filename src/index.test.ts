@@ -1,4 +1,4 @@
-import { get, set } from './index'
+import { get, set, update } from './index'
 
 describe('set', () => {
   const initial = {a: {b: {c: 19}}, aa: 'shallow'}
@@ -148,5 +148,53 @@ describe('get', () => {
   it('Can access a deeply nested value', () => {
     const value = get({ a: { b: { c: { d: 5 } } } }, ['a', 'b', 'c', 'd'])
     expect(value).toBe(5)
+  })
+})
+
+describe('update', () => {
+  const initial = { a: { b: 3 }, c: { d: 7 }}
+  const inc = jest.fn((val: number) => val + 1)
+  const result = update(initial, ['a', 'b'], inc)
+
+  it('calls the update function with current value', () => {
+    expect(inc).toHaveBeenCalledWith(3)
+  })
+
+  it('sets the value at path to the returned value', () => {
+    expect(result.a.b).toBe(4)
+  })
+  
+  it('does not mutate the object', () => {
+    expect(initial.a).toBe(initial.a)
+  })
+
+  it('does not change sibling paths', () => {
+    expect(result.c).toBe(initial.c)
+  })
+
+  it('can immutably update a dictionary type', () => {
+    const someDictionary: { [key: string]: { key: number } } = {someKey: {key: 1}, otherKey: {key: 2}}
+    const updatedDictionary = update(someDictionary, ['someKey', 'key'], val => val + 1)
+    expect(updatedDictionary.someKey.key).toBe(2)
+    expect(updatedDictionary.otherKey.key).toEqual(someDictionary.otherKey.key)
+  })
+
+  it('can immutably update tuples', () => {
+    const someTuple: [number, string, { key: number }, { otherKey: string }] =
+      [1, 'two', {key: 3}, {otherKey: 'four'}]
+    // TODO this doesn't type check
+    // tslint:disable-next-line:no-any
+    const updatedTuple = update(someTuple, [2, 'key'], val => val + 2)
+    expect(updatedTuple[2].key).toBe(5)
+    expect(updatedTuple[3]).toEqual(someTuple[3])
+  })
+
+  it('can immutably update arrays', () => {
+    const someArray: Array<{ key: string }> = [{key: 'zero'}, {key: 'one'}, {key: 'two'}]
+    // TODO this doesn't type check
+    // tslint:disable-next-line:no-any
+    const updatedArray = update(someArray, [1, 'key'], val => `updated-${val}`)
+    expect(updatedArray[1].key).toBe('updated-one')
+    expect(updatedArray[0]).toEqual(updatedArray[0])
   })
 })

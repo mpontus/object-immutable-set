@@ -48,3 +48,38 @@ export function get<T extends object>(obj: T, path: Array<string>): T { // tslin
     const [key, ...keys] = path
     return get(obj[key], keys as any) // tslint:disable-line:no-any
 }
+
+// tslint:disable:max-line-length
+export function update<T, K extends keyof T>(obj: T, path: [K], fn: (val: T[K]) => T[K]): T
+export function update<A, KA extends keyof A, KB extends keyof (A[KA])>(obj: A, path: [KA, KB], fn: (val: A[KA][KB]) => A[KA][KB]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB])>(obj: A, path: [KA, KB, KC], fn: (val: A[KA][KB][KC]) => A[KA][KB][KC]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB]), KD extends keyof (A[KA][KB][KC])>(obj: A, path: [KA, KB, KC, KD], fn: (val: A[KA][KB][KC][KD]) => A[KA][KB][KC][KD]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB]), KD extends keyof (A[KA][KB][KC]), KE extends keyof (A[KA][KB][KC][KD])>(obj: A, path: [KA, KB, KC, KD, KE], fn: (val: A[KA][KB][KC][KD][KE]) => A[KA][KB][KC][KD][KE]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB]), KD extends keyof (A[KA][KB][KC]), KE extends keyof (A[KA][KB][KC][KD]), KF extends keyof (A[KA][KB][KC][KD][KE])>(obj: A, path: [KA, KB, KC, KD, KE, KF], fn: (val: A[KA][KB][KC][KD][KE][KF]) => A[KA][KB][KC][KD][KE][KF]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB]), KD extends keyof (A[KA][KB][KC]), KE extends keyof (A[KA][KB][KC][KD]), KF extends keyof (A[KA][KB][KC][KD][KE]), KG extends keyof (A[KA][KB][KC][KD][KE][KF])>(obj: A, path: [KA, KB, KC, KD, KE, KF, KG], fn: (val: A[KA][KB][KC][KD][KE][KF][KG]) => A[KA][KB][KC][KD][KE][KF][KG]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB]), KD extends keyof (A[KA][KB][KC]), KE extends keyof (A[KA][KB][KC][KD]), KF extends keyof (A[KA][KB][KC][KD][KE]), KG extends keyof (A[KA][KB][KC][KD][KE][KF]), KH extends keyof (A[KA][KB][KC][KD][KE][KF][KG])>(obj: A, path: [KA, KB, KC, KD, KE, KF, KG, KH], fn: (val: A[KA][KB][KC][KD][KE][KF][KG][KH]) => A[KA][KB][KC][KD][KE][KF][KG][KH]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB]), KD extends keyof (A[KA][KB][KC]), KE extends keyof (A[KA][KB][KC][KD]), KF extends keyof (A[KA][KB][KC][KD][KE]), KG extends keyof (A[KA][KB][KC][KD][KE][KF]), KH extends keyof (A[KA][KB][KC][KD][KE][KF][KG]), KI extends keyof (A[KA][KB][KC][KD][KE][KF][KG][KH])>(obj: A, path: [KA, KB, KC, KD, KE, KF, KG, KH, KI], fn: (val: A[KA][KB][KC][KD][KE][KF][KG][KH][KI]) => A[KA][KB][KC][KD][KE][KF][KG][KH][KI]): A
+export function update<A, KA extends keyof A, KB extends keyof (A[KA]), KC extends keyof (A[KA][KB]), KD extends keyof (A[KA][KB][KC]), KE extends keyof (A[KA][KB][KC][KD]), KF extends keyof (A[KA][KB][KC][KD][KE]), KG extends keyof (A[KA][KB][KC][KD][KE][KF]), KH extends keyof (A[KA][KB][KC][KD][KE][KF][KG]), KI extends keyof (A[KA][KB][KC][KD][KE][KF][KG][KH]), KJ extends keyof (A[KA][KB][KC][KD][KE][KF][KG][KH][KI])>(obj: A, path: [KA, KB, KC, KD, KE, KF, KG, KH, KI, KJ], fn: (val: A[KA][KB][KC][KD][KE][KF][KG][KH][KI][KJ]) => A[KA][KB][KC][KD][KE][KF][KG][KH][KI][KJ]): A
+// tslint:enable:max-line-length
+export function update<T extends object>(
+  obj: T, 
+  path: Array<string>, 
+  fn: (val: any) => any // tslint:disable-line:no-any
+): T {
+  if (path.length === 0) {
+    return obj
+  }
+
+  const [key, ...keys] = path
+  if (keys.length === 0) {
+    return {
+      ...obj as any, // tslint:disable-line:no-any
+      [key]: fn(obj[key]),
+    }
+  }
+
+  return {
+    ...obj as any, // tslint:disable-line:no-any
+    [key]: update(obj[key], keys as any, fn), // tslint:disable-line:no-any
+  }
+}
